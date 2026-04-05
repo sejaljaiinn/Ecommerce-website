@@ -7,7 +7,7 @@ import MessageBox from '../components/MessageBox';
 import Rating from '../components/Rating';
 import { PRODUCT_REVIEW_CREATE_RESET } from '../constants/productConstants';
 
-export default function ProductScreen(props) {
+export default function ProductScreen() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -15,8 +15,12 @@ export default function ProductScreen(props) {
   const { id: productId } = params;
 
   const [qty, setQty] = useState(1);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+
   const productDetails = useSelector((state) => state.productDetails);
   const { loading, error, product } = productDetails;
+
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
 
@@ -27,21 +31,20 @@ export default function ProductScreen(props) {
     success: successReviewCreate,
   } = productReviewCreate;
 
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState('');
-
   useEffect(() => {
     if (successReviewCreate) {
       window.alert('Review Submitted Successfully');
-      setRating('');
+      setRating(0);
       setComment('');
       dispatch({ type: PRODUCT_REVIEW_CREATE_RESET });
     }
     dispatch(detailsProduct(productId));
   }, [dispatch, productId, successReviewCreate]);
+
   const addToCartHandler = () => {
     navigate(`/cart/${productId}?qty=${qty}`);
   };
+
   const submitHandler = (e) => {
     e.preventDefault();
     if (comment && rating) {
@@ -52,67 +55,83 @@ export default function ProductScreen(props) {
       alert('Please enter comment and rating');
     }
   };
+
   return (
     <div>
       {loading ? (
-        <LoadingBox></LoadingBox>
+        <LoadingBox />
       ) : error ? (
         <MessageBox variant="danger">{error}</MessageBox>
       ) : (
         <div>
           <Link to="/">Back to result</Link>
+
           <div className="row top">
             <div className="col-2">
               <img
                 className="large"
-                src={product.image}
-                alt={product.name}
-              ></img>
+                src={product?.image}
+                alt={product?.name}
+              />
             </div>
+
             <div className="col-1">
               <ul>
                 <li>
-                  <h1>{product.name}</h1>
+                  <h1>{product?.name}</h1>
                 </li>
+
                 <li>
                   <Rating
-                    rating={product.rating}
-                    numReviews={product.numReviews}
-                  ></Rating>
+                    rating={product?.rating}
+                    numReviews={product?.numReviews}
+                  />
                 </li>
-                <li>Pirce : ${product.price}</li>
+
+                <li>Price: ${product?.price}</li>
+
                 <li>
                   Description:
-                  <p>{product.description}</p>
+                  <p>{product?.description}</p>
                 </li>
               </ul>
             </div>
+
             <div className="col-1">
               <div className="card card-body">
                 <ul>
                   <li>
                     Seller{' '}
                     <h2>
-                      <Link to={`/seller/${product.seller._id}`}>
-                        {product.seller.seller.name}
-                      </Link>
+                      {product?.seller ? (
+                        <Link to={`/seller/${product.seller._id}`}>
+                          {product.seller.name}
+                        </Link>
+                      ) : (
+                        <span>No Seller</span>
+                      )}
                     </h2>
-                    <Rating
-                      rating={product.seller.seller.rating}
-                      numReviews={product.seller.seller.numReviews}
-                    ></Rating>
+
+                    {product?.seller && (
+                      <Rating
+                        rating={product.seller.rating || 0}
+                        numReviews={product.seller.numReviews || 0}
+                      />
+                    )}
                   </li>
+
                   <li>
                     <div className="row">
                       <div>Price</div>
-                      <div className="price">${product.price}</div>
+                      <div className="price">${product?.price}</div>
                     </div>
                   </li>
+
                   <li>
                     <div className="row">
                       <div>Status</div>
                       <div>
-                        {product.countInStock > 0 ? (
+                        {product?.countInStock > 0 ? (
                           <span className="success">In Stock</span>
                         ) : (
                           <span className="danger">Unavailable</span>
@@ -120,7 +139,8 @@ export default function ProductScreen(props) {
                       </div>
                     </div>
                   </li>
-                  {product.countInStock > 0 && (
+
+                  {product?.countInStock > 0 && (
                     <>
                       <li>
                         <div className="row">
@@ -141,6 +161,7 @@ export default function ProductScreen(props) {
                           </div>
                         </div>
                       </li>
+
                       <li>
                         <button
                           onClick={addToCartHandler}
@@ -155,26 +176,33 @@ export default function ProductScreen(props) {
               </div>
             </div>
           </div>
+
           <div>
             <h2 id="reviews">Reviews</h2>
-            {product.reviews.length === 0 && (
+
+            {!product?.reviews || product.reviews.length === 0 ? (
               <MessageBox>There is no review</MessageBox>
+            ) : (
+              <ul>
+                {product.reviews.map((review) => (
+                  <li key={review._id}>
+                    <strong>{review.name}</strong>
+                    <Rating rating={review.rating} caption=" " />
+                    <p>{review.createdAt.substring(0, 10)}</p>
+                    <p>{review.comment}</p>
+                  </li>
+                ))}
+              </ul>
             )}
+
             <ul>
-              {product.reviews.map((review) => (
-                <li key={review._id}>
-                  <strong>{review.name}</strong>
-                  <Rating rating={review.rating} caption=" "></Rating>
-                  <p>{review.createdAt.substring(0, 10)}</p>
-                  <p>{review.comment}</p>
-                </li>
-              ))}
               <li>
                 {userInfo ? (
                   <form className="form" onSubmit={submitHandler}>
                     <div>
                       <h2>Write a customer review</h2>
                     </div>
+
                     <div>
                       <label htmlFor="rating">Rating</label>
                       <select
@@ -187,9 +215,10 @@ export default function ProductScreen(props) {
                         <option value="2">2- Fair</option>
                         <option value="3">3- Good</option>
                         <option value="4">4- Very good</option>
-                        <option value="5">5- Excelent</option>
+                        <option value="5">5- Excellent</option>
                       </select>
                     </div>
+
                     <div>
                       <label htmlFor="comment">Comment</label>
                       <textarea
@@ -198,14 +227,15 @@ export default function ProductScreen(props) {
                         onChange={(e) => setComment(e.target.value)}
                       ></textarea>
                     </div>
+
                     <div>
-                      <label />
                       <button className="primary" type="submit">
                         Submit
                       </button>
                     </div>
+
                     <div>
-                      {loadingReviewCreate && <LoadingBox></LoadingBox>}
+                      {loadingReviewCreate && <LoadingBox />}
                       {errorReviewCreate && (
                         <MessageBox variant="danger">
                           {errorReviewCreate}

@@ -15,7 +15,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost/amazona');
+mongoose.connect(process.env.MONGODB_URL );
 app.use('/api/uploads', uploadRouter);
 app.use('/api/users', userRouter);
 app.use('/api/products', productRouter);
@@ -35,7 +35,13 @@ app.get('*', (req, res) =>
 // app.get('/', (req, res) => {
 //   res.send('Server is ready');
 // });
-
+mongoose.connect(process.env.MONGODB_URL)
+  .then(() => {
+    console.log("MongoDB Connected ✅");
+  })
+  .catch((err) => {
+    console.log("MongoDB Error ❌", err.message);
+  });
 app.use((err, req, res, next) => {
   res.status(500).send({ message: err.message });
 });

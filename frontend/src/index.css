@@ -467,3 +467,22 @@ img.large {
 .support-users .unread {
   background-color: #f02020;
 }
+/* Carousel Legend Fix */
+.carousel .legend {
+  width: fit-content !important; /* Shrinks the background to the size of the text */
+  max-width: 90%;               /* Prevents it from hitting the edges on small screens */
+  margin: 0 auto !important;     /* Centers the box */
+  left: 0 !important;            /* Resets default library positioning */
+  right: 0 !important;           /* Resets default library positioning */
+  background: rgba(32, 48, 64, 0.8) !important; /* Matches your header/footer color (#203040) */
+  border-radius: 0.5rem !important;            /* Matches your img/card border-radius */
+  opacity: 1 !important;
+  padding: 0.8rem 1.5rem !important;           /* Gives the text some breathing room */
+  font-size: 1.4rem !important;                /* Fits your typography scale */
+}
+
+
+.carousel .slide img {
+  max-width: 15% ; 
+  object-fit: contain;
+}
