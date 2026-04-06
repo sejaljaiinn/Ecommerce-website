@@ -1,5 +1,5 @@
 # Amazona ECommerce Website
-![amazona](/template/images/amazona.jpg)
+![amazona]("C:\Users\Lenovo\OneDrive\Pictures\Screenshots\Screenshot 2026-04-06 145241.png")
 
 
 
