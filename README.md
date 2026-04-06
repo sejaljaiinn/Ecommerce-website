@@ -96,7 +96,7 @@ PORT=5000
 Run backend:
 
 
-npm run dev
+npm start
 
 
 ---
