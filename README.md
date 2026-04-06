@@ -1,6 +1,6 @@
 # Amazona ECommerce Website
-![amazona]("C:\Users\Lenovo\OneDrive\Pictures\Screenshots\Screenshot 2026-04-06 145241.png")
-
+![App Screenshot](./img1.png)
+![App Screenshot](./img.png)
 
 
 # 🛒 Ecommerce Website (MERN Stack)
